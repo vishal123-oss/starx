@@ -1,0 +1,72 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "ayussh-2",
+      "name": "Ayush",
+      "avatar_url": "https://avatars.githubusercontent.com/u/135319056?v=4",
+      "profile": "https://ayussh.vercel.app/",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "AYANscyy2",
+      "name": "Ayan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/180634057?v=4",
+      "profile": "https://portfolioscyy.netlify.app/playground",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "BlessedAmrita",
+      "name": "BlessedAmrita",
+      "avatar_url": "https://avatars.githubusercontent.com/u/153388147?v=4",
+      "profile": "https://github.com/BlessedAmrita",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "auraexe25",
+      "name": "Veena Sahu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/154359186?v=4",
+      "profile": "http://portfolio-eight-rose-30.vercel.app/",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "siddharth-narayan-mishra",
+      "name": "siddharth",
+      "avatar_url": "https://avatars.githubusercontent.com/u/138509510?v=4",
+      "profile": "https://github.com/siddharth-narayan-mishra",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "Abimanyu-A",
+      "name": "Abimanyu A",
+      "avatar_url": "https://avatars.githubusercontent.com/u/154288841?v=4",
+      "profile": "https://github.com/Abimanyu-A",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "project-xangoes",
+  "projectOwner": "dscnitrourkela"
+}

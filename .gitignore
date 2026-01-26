@@ -1,0 +1,5 @@
+temp/node_modules/
+.bun/
+bin/
+obj/
+dist/
