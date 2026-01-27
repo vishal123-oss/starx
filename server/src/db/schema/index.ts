@@ -8,4 +8,6 @@ export * from "./transaction";
 export * from "./booking";
 export * from "./ticket";
 export * from "./team";
+export * from "./schedule";
+export * from "./reminder";
 export * from "./relations";

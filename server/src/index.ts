@@ -3,13 +3,32 @@ import {
   env,
   validateEnv,
 } from './config/env';
+import { reminderService } from './services/reminder.service';
+import { sendReminderEmail } from './services/email.service';
 
 // Validate environment variables on startup
 validateEnv();
 
-const server = {
+console.log(`Server running on port ${env.PORT}`);
+Bun.serve({
     port: env.PORT,
     fetch: app.fetch,
-};
+});
 
-export default server;
+// Start reminder worker
+setInterval(async () => {
+    try {
+        const dueReminders = await reminderService.getDueReminders();
+        for (const { reminder, user, event } of dueReminders) {
+            try {
+                await sendReminderEmail(user, event, reminder);
+                await reminderService.markAsSent(reminder.id);
+                console.log(`Reminder sent for event: ${event.name} to ${user.email}`);
+            } catch (error) {
+                console.error(`Failed to send reminder ${reminder.id}:`, error);
+            }
+        }
+    } catch (error) {
+        console.error('Error in reminder worker:', error);
+    }
+}, 60000); // Check every minute

@@ -5,6 +5,8 @@ import { clubs } from './club';
 import { events } from './event';
 import { fests } from './fest';
 import { institutes } from './institute';
+import { reminders } from './reminder';
+import { schedules } from './schedule';
 import { teams } from './team';
 import { tickets } from './ticket';
 import { transactions } from './transaction';
@@ -18,6 +20,7 @@ export const userRelations = relations(users, ({ one, many }) => ({
     }),
     transactions: many(transactions),
     bookings: many(bookings),
+    schedules: many(schedules),
     teamMemberships: many(teams),
 }));
 
@@ -39,6 +42,7 @@ export const eventRelations = relations(events, ({ one, many }) => ({
         references: [clubs.id],
     }),
     bookings: many(bookings),
+    schedules: many(schedules),
 }));
 
 // Institute relations
@@ -70,6 +74,7 @@ export const bookingRelations = relations(
             fields: [bookings.eventID],
             references: [events.id],
         }),
+        schedules: many(schedules),
         tickets: many(tickets),
     })
 );
@@ -95,5 +100,38 @@ export const teamRelations = relations(teams, ({ one }) => ({
     club: one(clubs, {
         fields: [teams.clubID],
         references: [clubs.id],
+    }),
+}));
+
+// Schedule relations
+export const scheduleRelations = relations(schedules, ({ one, many }) => ({
+    user: one(users, {
+        fields: [schedules.userId],
+        references: [users.id],
+    }),
+    event: one(events, {
+        fields: [schedules.eventId],
+        references: [events.id],
+    }),
+    booking: one(bookings, {
+        fields: [schedules.bookingId],
+        references: [bookings.id],
+    }),
+    reminders: many(reminders),
+}));
+
+// Reminder relations
+export const reminderRelations = relations(reminders, ({ one }) => ({
+    user: one(users, {
+        fields: [reminders.userId],
+        references: [users.id],
+    }),
+    event: one(events, {
+        fields: [reminders.eventId],
+        references: [events.id],
+    }),
+    schedule: one(schedules, {
+        fields: [reminders.scheduleId],
+        references: [schedules.id],
     }),
 }));

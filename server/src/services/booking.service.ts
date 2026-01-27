@@ -2,7 +2,9 @@ import { eq } from 'drizzle-orm';
 
 import { db } from '../db/schema';
 import { bookings } from '../db/schema/booking';
+import { events } from '../db/schema/event';
 import { ticketService } from './ticket.service';
+import { scheduleService } from './schedule.service';
 
 /**
  * @description Booking service to handle event bookings
@@ -16,6 +18,7 @@ class BookingService {
             // Mock data for development
             const bookingId = crypto.randomUUID();
             const ticketId = crypto.randomUUID();
+            const scheduleId = crypto.randomUUID();
 
             return {
                 booking: {
@@ -29,6 +32,14 @@ class BookingService {
                     id: ticketId,
                     status: 'ISSUED',
                     issuedAt: new Date(),
+                },
+                schedule: {
+                    id: scheduleId,
+                    userId,
+                    eventId,
+                    bookingId,
+                    scheduledDate: new Date(),
+                    reminderSent: false,
                 },
             };
         }
@@ -44,9 +55,26 @@ class BookingService {
         // Generate ticket for the booking
         const ticket = await ticketService.createTicket(booking.id, eventId, userId);
 
+        // Create schedule entry for the booked event
+        let schedule = null;
+        try {
+            // Fetch event details for scheduling
+            const eventData = await db.select().from(events).where(eq(events.id, eventId)).limit(1);
+            if (eventData.length > 0) {
+                const event = eventData[0];
+                // For now, schedule at event start date
+                // TODO: Handle recurring events
+                schedule = await scheduleService.createSchedule(userId, eventId, booking.id, event.startDate);
+            }
+        } catch (error) {
+            console.error("Failed to create schedule:", error);
+            // Don't fail booking if schedule creation fails
+        }
+
         return {
             booking,
             ticket,
+            schedule,
         };
     }
 

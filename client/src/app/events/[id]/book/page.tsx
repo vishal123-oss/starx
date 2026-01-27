@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, CreditCard, Lock, CheckCircle2, IndianRupee, Calendar, MapPin, Download } from "lucide-react";
+import { ArrowLeft, CreditCard, Lock, CheckCircle2, IndianRupee, Calendar, MapPin, Download, Bell, ExternalLink, Clock } from "lucide-react";
 import QRCode from "react-qr-code";
 import html2canvas from "html2canvas";
 
@@ -14,8 +14,10 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/auth-context";
-import { apiClient } from "@/lib/api";
+import { apiClient, API_BASE_URL } from "@/lib/api";
 
 export default function BookEventPage() {
     const params = useParams();
@@ -25,7 +27,10 @@ export default function BookEventPage() {
     const [loading, setLoading] = useState(true);
     const [booking, setBooking] = useState(false);
     const [error, setError] = useState("");
-    const [bookedTicket, setBookedTicket] = useState<any>(null);
+    const [bookingResult, setBookingResult] = useState<any>(null);
+    const [reminderDialogOpen, setReminderDialogOpen] = useState(false);
+    const [selectedMinutes, setSelectedMinutes] = useState<number | null>(null);
+    const [customMinutes, setCustomMinutes] = useState<string>("");
 
     // Payment form state
     const [cardNumber, setCardNumber] = useState("");
@@ -76,7 +81,7 @@ export default function BookEventPage() {
             };
 
             const result = await apiClient.bookEvent(params.id as string, paymentData);
-            setBookedTicket(result.ticket);
+            setBookingResult(result);
         } catch (err: any) {
             setError(err.message || "Booking failed");
         } finally {
@@ -329,7 +334,7 @@ export default function BookEventPage() {
                 </div>
 
                 {/* Success Modal/Section */}
-                {bookedTicket && (
+                {bookingResult && (
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
                         <Card className="max-w-md w-full">
                             <CardHeader className="text-center">
@@ -342,35 +347,139 @@ export default function BookEventPage() {
                                         Your ticket has been booked successfully. Scan the QR code below for check-in.
                                     </p>
                                     <div className="bg-white p-4 rounded-lg inline-block qr-container">
-                                        <QRCode value={bookedTicket.id} size={200} />
+                                        <QRCode value={bookingResult.ticket.id} size={200} />
                                     </div>
                                 </div>
                                 <div className="space-y-2 text-sm text-muted-foreground">
                                     <p><strong>Event:</strong> {event?.name}</p>
-                                    <p><strong>Ticket ID:</strong> {bookedTicket.id.slice(0, 20)}...</p>
-                                    <p><strong>Status:</strong> {bookedTicket.status}</p>
+                                    <p><strong>Ticket ID:</strong> {bookingResult.ticket.id.slice(0, 20)}...</p>
+                                    <p><strong>Status:</strong> {bookingResult.ticket.status}</p>
                                 </div>
-                                <div className="flex gap-2">
-                                    <Button
-                                        onClick={async () => {
-                                            const qrElement = document.querySelector('.qr-container');
-                                            if (qrElement) {
-                                                const canvas = await html2canvas(qrElement as HTMLElement);
-                                                const link = document.createElement('a');
-                                                link.download = `ticket-${event?.id}.png`;
-                                                link.href = canvas.toDataURL();
-                                                link.click();
-                                            }
-                                        }}
-                                        variant="outline"
-                                        className="flex-1"
-                                    >
-                                        <Download className="h-4 w-4 mr-2" />
-                                        Download QR
-                                    </Button>
-                                    <Button asChild className="flex-1">
-                                        <Link href="/my-bookings">View My Bookings</Link>
-                                    </Button>
+                                <div className="space-y-3">
+                                    <div className="flex gap-2">
+                                        <Button
+                                            onClick={async () => {
+                                                const qrElement = document.querySelector('.qr-container');
+                                                if (qrElement) {
+                                                    const canvas = await html2canvas(qrElement as HTMLElement);
+                                                    const link = document.createElement('a');
+                                                    link.download = `ticket-${event?.id}.png`;
+                                                    link.href = canvas.toDataURL();
+                                                    link.click();
+                                                }
+                                            }}
+                                            variant="outline"
+                                            className="flex-1"
+                                        >
+                                            <Download className="h-4 w-4 mr-2" />
+                                            Download QR
+                                        </Button>
+                                        <Button asChild className="flex-1">
+                                            <Link href="/my-bookings">View My Bookings</Link>
+                                        </Button>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Dialog open={reminderDialogOpen} onOpenChange={setReminderDialogOpen}>
+                                            <DialogTrigger asChild>
+                                                <Button variant="outline" className="flex-1">
+                                                    <Bell className="h-4 w-4 mr-2" />
+                                                    Set Reminder
+                                                </Button>
+                                            </DialogTrigger>
+                                            <DialogContent className="sm:max-w-md">
+                                                <DialogHeader>
+                                                    <DialogTitle className="flex items-center gap-2">
+                                                        <Clock className="h-5 w-5" />
+                                                        Set Event Reminder
+                                                    </DialogTitle>
+                                                </DialogHeader>
+                                                <div className="space-y-4">
+                                                    <div>
+                                                        <Label className="text-sm font-medium">Quick Options</Label>
+                                                        <div className="flex gap-2 mt-2 flex-wrap">
+                                                            {[5, 10, 15, 30].map((min) => (
+                                                                <Badge
+                                                                    key={min}
+                                                                    variant={selectedMinutes === min ? "default" : "outline"}
+                                                                    className="cursor-pointer px-3 py-1"
+                                                                    onClick={() => {
+                                                                        setSelectedMinutes(min);
+                                                                        setCustomMinutes("");
+                                                                    }}
+                                                                >
+                                                                    {min} min
+                                                                </Badge>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <Label htmlFor="customMinutes" className="text-sm font-medium">
+                                                            Or enter custom minutes
+                                                        </Label>
+                                                        <Input
+                                                            id="customMinutes"
+                                                            type="number"
+                                                            placeholder="e.g., 60"
+                                                            value={customMinutes}
+                                                            onChange={(e) => {
+                                                                setCustomMinutes(e.target.value);
+                                                                setSelectedMinutes(null);
+                                                            }}
+                                                            className="mt-1"
+                                                        />
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <Button
+                                                            onClick={() => setReminderDialogOpen(false)}
+                                                            variant="outline"
+                                                            className="flex-1"
+                                                        >
+                                                            Cancel
+                                                        </Button>
+                                                        <Button
+                                                            onClick={async () => {
+                                                                const minutes = selectedMinutes || (customMinutes ? parseInt(customMinutes) : null);
+                                                                if (minutes && bookingResult?.schedule?.id) {
+                                                                    try {
+                                                                        await apiClient.setReminder(bookingResult.schedule.id, minutes);
+                                                                        alert('Reminder set successfully! You will receive an email notification.');
+                                                                        setReminderDialogOpen(false);
+                                                                        setSelectedMinutes(null);
+                                                                        setCustomMinutes("");
+                                                                    } catch (error: any) {
+                                                                        alert('Failed to set reminder: ' + error.message);
+                                                                    }
+                                                                } else {
+                                                                    alert('Please select a reminder time.');
+                                                                }
+                                                            }}
+                                                            className="flex-1"
+                                                        >
+                                                            Set Reminder
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </DialogContent>
+                                        </Dialog>
+                                        <Button
+                                            onClick={() => {
+                                                const startDate = new Date(event?.startDate);
+                                                const endDate = event?.endDate ? new Date(event.endDate) : new Date(startDate.getTime() + 3600000);
+
+                                                const formatDate = (date: Date) => {
+                                                    return date.toISOString().replace(/[:-]/g, '').replace(/\.\d{3}/, '');
+                                                };
+
+                                                const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event?.name || '')}&dates=${formatDate(startDate)}/${formatDate(endDate)}&details=${encodeURIComponent(event?.description || '')}&location=${encodeURIComponent(event?.location || '')}`;
+                                                window.open(googleUrl, '_blank');
+                                            }}
+                                            variant="outline"
+                                            className="flex-1"
+                                        >
+                                            <Calendar className="h-4 w-4 mr-2" />
+                                            Add to Calendar
+                                        </Button>
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>

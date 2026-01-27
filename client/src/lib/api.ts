@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 interface ApiResponse<T> {
     success: boolean;
@@ -108,6 +108,14 @@ class ApiClient {
     async cancelBooking(bookingId: string) {
         return this.request('/api/bookings/' + bookingId, {
             method: 'DELETE',
+        });
+    }
+
+    // Schedule endpoints
+    async setReminder(scheduleId: string, minutesBefore: number) {
+        return this.request<{ reminder: any }>('/api/schedules/set-reminder', {
+            method: 'POST',
+            body: JSON.stringify({ scheduleId, minutesBefore }),
         });
     }
 }

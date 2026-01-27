@@ -1,7 +1,7 @@
 {
   "name": "server",
   "scripts": {
-    "dev": "bun run --hot src/index.ts",
+    "dev": "tsx watch src/index.ts",
     "db:generate": "bunx drizzle-kit generate",
     "db:migrate": "bunx drizzle-kit migrate",
     "db:studio": "bunx drizzle-kit studio"
@@ -11,6 +11,7 @@
     "dotenv": "^17.2.0",
     "drizzle-orm": "^0.44.2",
     "hono": "^4.8.4",
+    "nodemailer": "^7.0.12",
     "pg": "^8.16.3",
     "qrcode": "^1.5.4",
     "zod": "^4.0.0"

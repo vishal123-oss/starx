@@ -110,7 +110,7 @@ export default function EventsPage() {
                             </div>
                         ))}
                     </div>
-                ) : events.length === 0 ? (
+                ) : filteredEvents.length === 0 ? (
                     <div className="text-center py-16">
                         <Calendar className="h-16 w-16 text-muted-foreground/30 mx-auto mb-4" />
                         <h3 className="text-lg font-semibold mb-2">No events found</h3>
