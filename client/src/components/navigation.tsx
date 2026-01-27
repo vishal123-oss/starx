@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Menu, X, Calendar, LayoutDashboard, Ticket, Plus } from "lucide-react";
+import { Menu, X, Calendar, CalendarDays, LayoutDashboard, Ticket, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -21,6 +21,7 @@ export function Navigation() {
         ...(isAuthenticated
             ? [
                   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+                  { href: "/calendar", label: "Calendar", icon: CalendarDays },
                   { href: "/my-bookings", label: "My Bookings", icon: Ticket },
                   { href: "/admin/events/create", label: "Create", icon: Plus },
               ]

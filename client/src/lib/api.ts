@@ -1,4 +1,5 @@
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+// Use relative URL to proxy through Next.js server (see next.config.ts rewrites)
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
 interface ApiResponse<T> {
     success: boolean;

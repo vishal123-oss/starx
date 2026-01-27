@@ -1,3 +1,4 @@
+import { serve } from '@hono/node-server';
 import app from './app';
 import {
   env,
@@ -10,9 +11,13 @@ import { sendReminderEmail } from './services/email.service';
 validateEnv();
 
 console.log(`Server running on port ${env.PORT}`);
-Bun.serve({
-    port: env.PORT,
-    fetch: app.fetch,
+
+serve({
+  fetch: app.fetch,
+  port: env.PORT,
+  hostname: '0.0.0.0',
+}, (info) => {
+  console.log(`Server listening on http://localhost:${info.port}`);
 });
 
 // Start reminder worker

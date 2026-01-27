@@ -1,4 +1,8 @@
+import { config } from "dotenv";
 import type { EnvConfig } from "@/types";
+
+// Load environment variables from .env file
+config();
 
 // Helper function to parse environment variables with type conversion
 function parseEnv<T>(
