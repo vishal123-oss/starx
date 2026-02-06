@@ -5,6 +5,11 @@ class AuthService {
     // Mock user storage (in production, use database)
     private mockUsers: Map<string, { email: string; password: string; id: string; name: string }> = new Map();
 
+    constructor() {
+        // Clear logged in instances on restart
+        this.mockUsers.clear();
+    }
+
     /**
      * @description Register a new user
      */

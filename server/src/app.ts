@@ -1,3 +1,4 @@
+import type { AuthVariables } from '@/types';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
@@ -9,7 +10,7 @@ import {
 import { routes } from './routes';
 import { rateLimit } from './middlewares/rateLimit';
 
-const app = new Hono();
+const app = new Hono<{ Variables: AuthVariables }>();
 
 // CORS middleware
 app.use('*', cors({

@@ -4,7 +4,10 @@
     "dev": "tsx watch src/index.ts",
     "db:generate": "bunx drizzle-kit generate",
     "db:migrate": "bunx drizzle-kit migrate",
-    "db:studio": "bunx drizzle-kit studio"
+    "db:studio": "bunx drizzle-kit studio",
+    "test": "tsx --test",
+    "test:watch": "tsx --test --watch",
+    "test:example": "tsx tests/example.test.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.9",

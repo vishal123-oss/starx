@@ -23,3 +23,19 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
         totalPages: number;
     };
 }
+
+export interface AuthUser {
+    id: string;
+    email: string;
+    name?: string;
+}
+
+export type AuthVariables = {
+    user: AuthUser;
+};
+
+declare module 'hono' {
+    interface ContextVariableMap {
+        user: AuthUser;
+    }
+}

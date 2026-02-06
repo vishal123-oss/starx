@@ -1,3 +1,4 @@
+import type { AuthVariables } from '@/types';
 import { Hono } from 'hono';
 
 import { testController } from '@/controllers/test';
@@ -12,7 +13,7 @@ import {
   userParamsSchema,
 } from '@/middlewares/validators';
 
-const testRouter = new Hono();
+const testRouter = new Hono<{ Variables: AuthVariables }>();
 
 // GET /test - Get test information (no validation needed)
 testRouter.get("/", asyncHandler(testController.getTestInfo));
